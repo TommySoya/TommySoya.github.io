@@ -1,0 +1,27 @@
+[
+    {
+        "name": "Vue",
+        "url": "https://github.com/vuejs/vue",
+        "desc": "Vue.js是一个渐进式JavaScript框架，用于构建用户界面。它易于上手，同时也能配合其他库或现有项目使用。Vue.js的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目集成。"
+    },
+    {
+        "name": "React",
+        "url": "https://github.com/facebook/react",
+        "desc": "React是一个由Facebook开发的用于构建用户界面的JavaScript库。它允许开发者使用组件化的方式来构建复杂的用户界面，使得代码更加模块化和可重用。"
+    },
+    {
+        "name": "TensorFlow",
+        "url": "https://github.com/tensorflow/tensorflow",
+        "desc": "TensorFlow是一个由Google开发的开源机器学习框架，用于数据流图的数值计算。它广泛应用于各类机器学习和深度学习项目，提供了丰富的API和强大的计算能力。"
+    },
+    {
+        "name": "Gatsby",
+        "url": "https://github.com/gatsbyjs/gatsby",
+        "desc": "Gatsby是一个基于React的静态站点生成器，它利用了现代Web技术如GraphQL和React，可以帮助开发者快速构建出性能优异的个人博客、企业网站和电子商务平台等。"
+    },
+    {
+        "name": "Docker",
+        "url": "https://github.com/docker/docker-ce",
+        "desc": "Docker是一个开源的应用容器引擎，它允许开发者打包应用及其依赖环境到一个可移植的容器中，然后发布到任何流行的Linux机器或Windows机器上，也可以实现虚拟化。"
+    }
+]
