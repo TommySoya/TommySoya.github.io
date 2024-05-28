@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Swin Transformer Swin-Transformer在Transformer模块中使用了类似于深度卷积网络的“层次化构建”方法，引入“Patch”的概念，同时修改了网络的Block 在开始前，Swin-Transformer首先对输入图像做一次Patch Partition+Patch Embedding，之后送入BackBone中。在BackBone里，Feature Map的尺寸">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swin Transformer论文总结报告">
+<meta property="og:url" content="https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/index.html">
+<meta property="og:site_name" content="DingYongliang&#39;s Blog">
+<meta property="og:description" content="Swin Transformer Swin-Transformer在Transformer模块中使用了类似于深度卷积网络的“层次化构建”方法，引入“Patch”的概念，同时修改了网络的Block 在开始前，Swin-Transformer首先对输入图像做一次Patch Partition+Patch Embedding，之后送入BackBone中。在BackBone里，Feature Map的尺寸">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://dbbdylan.github.io/images/picture1.png">
+<meta property="og:image" content="https://dbbdylan.github.io/images/picture2.png">
+<meta property="og:image" content="https://dbbdylan.github.io/images/picture3.png">
+<meta property="og:image" content="https://dbbdylan.github.io/images/picture4.png">
+<meta property="og:image" content="https://dbbdylan.github.io/images/picture5.png">
+<meta property="og:image" content="https://dbbdylan.github.io/images/picture6.png">
+<meta property="article:published_time" content="2024-04-12T13:15:02.000Z">
+<meta property="article:modified_time" content="2024-05-28T07:51:57.951Z">
+<meta property="article:author" content="DingYongliang">
+<meta property="article:tag" content="文献阅读">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://dbbdylan.github.io/images/picture1.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Swin Transformer论文总结报告</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/dbbDylan/dbbDylan.github.io">Projects</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/04/17/git/git%E4%BB%93%E5%BA%93%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/04/12/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&text=Swin Transformer论文总结报告"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&title=Swin Transformer论文总结报告"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&is_video=false&description=Swin Transformer论文总结报告"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Swin Transformer论文总结报告&body=Check out this article: https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&title=Swin Transformer论文总结报告"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&title=Swin Transformer论文总结报告"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&title=Swin Transformer论文总结报告"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&title=Swin Transformer论文总结报告"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&name=Swin Transformer论文总结报告&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&t=Swin Transformer论文总结报告"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Swin-Transformer"><span class="toc-number">1.</span> <span class="toc-text">Swin Transformer</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Patch-Partition"><span class="toc-number">1.1.</span> <span class="toc-text">1. Patch Partition</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Linear-Embedding"><span class="toc-number">1.2.</span> <span class="toc-text">2. Linear Embedding</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Patch-Merging"><span class="toc-number">1.3.</span> <span class="toc-text">3. Patch Merging</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-W-MSA"><span class="toc-number">1.4.</span> <span class="toc-text">4. W-MSA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-SW-MSA"><span class="toc-number">1.5.</span> <span class="toc-text">5. SW-MSA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Relative-Position-Bias"><span class="toc-number">1.6.</span> <span class="toc-text">6. Relative Position Bias</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Swin Transformer论文总结报告
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">DingYongliang</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-04-12T13:15:02.000Z" class="dt-published" itemprop="datePublished">2024-04-12</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/" rel="tag">文献阅读</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="Swin-Transformer"><a href="#Swin-Transformer" class="headerlink" title="Swin Transformer"></a>Swin Transformer</h1><p><img src="/images/picture1.png" alt="图1 Swin Transformer架构图"></p>
+<p>Swin-Transformer在Transformer模块中使用了类似于深度卷积网络的“层次化构建”方法，引入“Patch”的概念，同时修改了网络的Block</p>
+<p>在开始前，Swin-Transformer首先对输入图像做一次Patch Partition+Patch Embedding，之后送入BackBone中。在BackBone里，Feature Map的尺寸逐渐减小，感受野逐渐扩大；同时在一个Block里，Feature Map被一个个Patch分割</p>
+<p>注意，(b)中结构是成对出现的，所以Block的重复次数一定是偶数，它们的Attention模块不同</p>
+<h2 id="1-Patch-Partition"><a href="#1-Patch-Partition" class="headerlink" title="1. Patch Partition"></a>1. Patch Partition</h2><p>input &#x3D; (H, W, 3)，output &#x3D; (H&#x2F;4, W&#x2F;4, 3*16&#x3D;48)，易得Patch Partition是将输入图像做4x4的Patch分割，每张RGB图像有3通道，即得到了48个(H&#x2F;4, W&#x2F;4)大小的输入</p>
+<p><img src="/images/picture2.png" alt="Untitled"></p>
+<h2 id="2-Linear-Embedding"><a href="#2-Linear-Embedding" class="headerlink" title="2. Linear Embedding"></a>2. Linear Embedding</h2><p>通过一层stride &#x3D; kernel_size的卷积层实现，input &#x3D; (H&#x2F;4, W&#x2F;4, 48)，output &#x3D; (H&#x2F;4, W&#x2F;4, C)，这里的C由网络的不同版本类型指定</p>
+<h2 id="3-Patch-Merging"><a href="#3-Patch-Merging" class="headerlink" title="3. Patch Merging"></a>3. Patch Merging</h2><p>如下图，在CNN中，我们通过池化操作来下采样；Swin-Transformer中的Patch Merging操作是将Feature Map分成无数个4x4的Patch，分别提取每个Patch的[0, 0]、[1, 0]、[0, 1]、[1, 1]位置作为新的channel，这样实现尺寸变为原来四分之一，但通道数翻4倍</p>
+<p>这样的好处是可以进行不同window之间的shuffle操作，使得后续的W-MSA、SW-MSA可以实现不同window的信息交流</p>
+<p><img src="/images/picture3.png" alt="Untitled"></p>
+<p>然后再通过Layer Norm，最后接一个Conv1x1将channel再次减半 </p>
+<h2 id="4-W-MSA"><a href="#4-W-MSA" class="headerlink" title="4. W-MSA"></a>4. W-MSA</h2><p>即Windows - Multi-head Self-Attention模块，将特征图分成若干个window，对每个window进行Self-Attention，减小计算量</p>
+<h2 id="5-SW-MSA"><a href="#5-SW-MSA" class="headerlink" title="5. SW-MSA"></a>5. SW-MSA</h2><p>即Shifted Windows - Multi-head Self-Attention模块。为了解决W-MSA中信息交互问题，作者提出通过Shift偏移方式，即将图像向右下偏移$\frac{window_size}{2}$个单位，如下图，则区域自左到右、自上而下被划分为A1、C1、A2、B1、D、B2、A3、C2、A4。此时B、C包含了2个window的信息，D包含了4个window</p>
+<p>但这样，显然不方便计算。因此我们移动新划分的区域，如下图，即可实现新的窗口划分，这样每个window的尺寸就相同了</p>
+<p><img src="/images/picture4.png" alt="Untitled"></p>
+<p><img src="/images/picture5.png" alt="Untitled"></p>
+<p>而为了计算时B1、B2互不干扰，C1、C2互不干扰，因此在每个MSA中做mask操作。掩码操作同Transformer中Decoder的操作，对于对应掩码位置直接减去一个INF（无穷大），则softmax后这里就置零了。如果忘记了请移步：</p>
+<p><a target="_blank" rel="noopener" href="https://www.notion.so/Transformer-c82afd9579ca4436afaeeacd3b0e5c67?pvs=21">Transformer</a></p>
+<h2 id="6-Relative-Position-Bias"><a href="#6-Relative-Position-Bias" class="headerlink" title="6. Relative Position Bias"></a>6. Relative Position Bias</h2><p>就是在Attenton中添加了位置偏移信息，具体是通过MLP的bias实现，效果很玄学，公式如下：</p>
+<p>$$<br>Attention&#x3D;SoftMax(\frac{QK^T}{\sqrt{d}}+B)V<br>$$</p>
+<p>Note:w&#x2F;o是without的缩写，w&#x2F;是with的缩写</p>
+<p>关于偏置B是如何实现的，见下文：</p>
+<p>如图所示，对于位置在$(x_0,\ y_0)$的像素，它的绝对位置编码就是它本身的坐标，它关于$(x_1,\ y_1)$的相对位置坐标是$(x_0-x_1,\ y_0-y_1)$</p>
+<p>则对于尺寸为$window\text{_}size$的窗口，每个位置都有对应的$window\text{_}size-1$个相对位置编码，将其拉成1维，重复计算其他位置可得如下$shape&#x3D;(window\text{_}size, window\text{_}size)$的Relative Position Table，Relative Position Table[window_size *x+y][:]是$(x,y)$位置关于其他位置的相对位置编码</p>
+<p><img src="/images/picture6.png" alt="Untitled"></p>
+<p>现在的问题是，如何去索引第二维，进而取出偏置？关于位置$(x_0,y_1)、(x_1, y_0)$，若直接两维相加，则映射在一维是等价的，实际二者的偏置信息存储在不同位置</p>
+<p>首先需要将每个维度加上$window\text{_}size-1$，以保证偏移量从0开始（对于$size&#x3D;window\text{_}size$大小的窗口，最小偏移量就是$-window\text{_}size+1$）</p>
+<p>然后对第一维做处理，对第一维乘以2倍的窗口大小减1，再进行两个维度的相加。这样就不会出现相同值的情况了，这样就得到了位置索引表</p>
+<p>根据这张表，可以很方便的索引到一维的Relative Position Table表，该表是一张一维表，大小是$(2 * window\text{_}size-1)^2$。因为对于上述索引表，原始的最大偏置量即$2 * window\text{_}size - 2$，则可以计算最大一维映射偏置量为：<br>$$(2 * window\text{_}size - 2) * (2 * window\text{_}size - 1) + 2 * window\text{_}size - 2 &#x3D; (2 * window\text{_}size - 1)^2 - 1$$</p>
+<p>则索引范围是$[0,(2*window\text{_}size-1)^2]$，即证</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/dbbDylan/dbbDylan.github.io">Projects</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Swin-Transformer"><span class="toc-number">1.</span> <span class="toc-text">Swin Transformer</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Patch-Partition"><span class="toc-number">1.1.</span> <span class="toc-text">1. Patch Partition</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Linear-Embedding"><span class="toc-number">1.2.</span> <span class="toc-text">2. Linear Embedding</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Patch-Merging"><span class="toc-number">1.3.</span> <span class="toc-text">3. Patch Merging</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-W-MSA"><span class="toc-number">1.4.</span> <span class="toc-text">4. W-MSA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-SW-MSA"><span class="toc-number">1.5.</span> <span class="toc-text">5. SW-MSA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Relative-Position-Bias"><span class="toc-number">1.6.</span> <span class="toc-text">6. Relative Position Bias</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&text=Swin Transformer论文总结报告"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&title=Swin Transformer论文总结报告"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&is_video=false&description=Swin Transformer论文总结报告"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Swin Transformer论文总结报告&body=Check out this article: https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&title=Swin Transformer论文总结报告"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&title=Swin Transformer论文总结报告"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&title=Swin Transformer论文总结报告"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&title=Swin Transformer论文总结报告"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&name=Swin Transformer论文总结报告&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dbbdylan.github.io/2024/04/12/Swin%20Transformer%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A/&t=Swin Transformer论文总结报告"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2024-2028
+    DingYongliang
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+      --><li><a href="/">Home</a></li><!--
+    --><!--
+      --><li><a href="/about/">About</a></li><!--
+    --><!--
+      --><li><a href="/archives/">Writing</a></li><!--
+    --><!--
+      --><li><a target="_blank" rel="noopener" href="https://github.com/dbbDylan/dbbDylan.github.io">Projects</a></li><!--
+    --><!--
+      --><li><a href="/tags/">Tag</a></li><!--
+    --><!--
+      --><li><a href="/search/">Search</a></li><!--
+    -->
+      </ul>
+      <ul>
+        
+          <!-- 不蒜子统计 -->
+          <span id="busuanzi_container_site_pv">
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+                  本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        
+      </ul>
+    </nav>
+  </div>
+  
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
