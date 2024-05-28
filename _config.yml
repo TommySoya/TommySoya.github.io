@@ -8,12 +8,12 @@ subtitle: 'ECNU DASE 51265903105'
 description: '开源软件开发与社区治理 第一次作业'
 keywords: 
 author: DingYongliang
-language: zh-CN
+language: 'en'
 timezone: 'UTC'
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://tommysoya.github.io/
+url: https://dbbDylan.github.io/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -103,5 +103,5 @@ theme: cactus
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: git@github.com:TommySoya/TommySoya.github.io
+  repo: git@github.com:dbbDylan/dbbDylan.github.io
   branch: main

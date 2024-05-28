@@ -17,7 +17,7 @@ nav:
   home: /
   about: /about/
   articles: /archives/
-  projects: https://github.com/TommySoya/TommySoya.github.io
+  projects: https://github.com/dbbDylan/dbbDylan.github.io
   tag: /tags/
   search: /search/
 
@@ -32,7 +32,7 @@ social_links:
   - 
     icon: github
     label: "GitHub"
-    link: "http://github.com/TommySoya"
+    link: "http://github.com/dbbDylan"
   - 
     icon: bilibili
     label: "BiliBili"
@@ -40,11 +40,7 @@ social_links:
   - 
     icon: mail
     label: "Email"
-    link: "51265903105@stu.ecnu.edu.cn"
-  - 
-    icon: mastodon
-    label: "mastodon.social"
-    link: "https://mastodon.social/@alice"
+    link: "mailto:51265903105@stu.ecnu.edu.cn"
 
 # Customize the overview with displaying a tagcloud on the index page.
 # Options: https://hexo.io/docs/helpers.html#tagcloud
